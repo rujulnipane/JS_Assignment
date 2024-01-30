@@ -9,4 +9,16 @@
     flex-wrap: wrap;
     height: fit-content;
     border: 3px solid black;
+    justify-content: space-around;
+}
+
+.result-img{
+    /* width: 25vw; */
+    /* height: 20vh; */
+
+
+}
+
+.img-head{
+    color: rgb(22, 54, 151);
 }
