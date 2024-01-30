@@ -1,5 +1,5 @@
 
-
+let pg_count = 1;
 const url1 = 'https://pinterest-video-and-image-downloader.p.rapidapi.com/pinterest-user?username=viratkohli';
 const options1 = {
     method: 'GET',
@@ -62,6 +62,19 @@ function myFunction(){
     }
     console.log(keyword);
     let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=1`;
+    getData3(url3);
+}
+
+function next_page(){
+    console.log("hh")
+    pg_count++;
+    document.getElementById('container').innerHTML="";
+    let keyword = document.getElementById('keyword').value;
+    if(keyword.length == 0){
+        return alert("Please Enter Text");
+    }
+    console.log(keyword);
+    let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=${pg_count}`;
     getData3(url3);
 }
 
