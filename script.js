@@ -35,20 +35,35 @@ const options3 = {
 
 async function getData3(url) {
     try {
+
+        let spinner_container = document.getElementById('spinner');
+        spinner_container.innerHTML =  `<div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>`
         const response = await fetch(url, options3);
         const result = await response.text();
+        spinner_container.innerHTML = "";
         const obj = JSON.parse(result);
-        // console.log(result)
+        console.log(obj)
+        // document.getElementById('')
         let photos = obj.photos;
-        photos.forEach(myFunction);
-        function myFunction(value) {
-
-            let img = document.createElement('img');
-            img.src = value.src.medium;
-            document.getElementById('container').appendChild(img);
-            img.classList.add('img-fluid', 'm-2', 'result-img');
+        if(photos.length == 0) {
+            let ch  = document.createElement('h3');
+            ch.textContent = "No Images Found";
+            document.getElementById('container').appendChild(ch);
         }
-    } catch (error) {
+        else{
+            photos.forEach(myFunction);
+        }
+        
+        function myFunction(value) {
+            let img = document.createElement('img');
+            img.src = value.src.tiny;
+            document.getElementById('container').appendChild(img);
+            img.classList.add('img-fluid', 'm-4', 'result-img');
+        }
+    }
+    catch (error) {
         console.error(error);
     }
 }
@@ -66,8 +81,22 @@ function myFunction(){
 }
 
 function next_page(){
-    console.log("hh")
     pg_count++;
+    console.log(pg_count);
+    document.getElementById('container').innerHTML="";
+    let keyword = document.getElementById('keyword').value;
+    if(keyword.length == 0){
+        return alert("Please Enter Text");
+    }
+    console.log(keyword);
+    let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=${pg_count}`;
+    getData3(url3);
+}
+
+function prev_page(){
+
+    pg_count--;
+    console.log(pg_count);  
     document.getElementById('container').innerHTML="";
     let keyword = document.getElementById('keyword').value;
     if(keyword.length == 0){
@@ -162,3 +191,34 @@ getData3(url3);
 
 
 
+
+// const url = 'https://bing-image-search1.p.rapidapi.com/images/search?q=tiger';
+// const options = {
+// 	method: 'GET',
+// 	headers: {
+// 		'X-RapidAPI-Key': '1541e54116msh122880b1fc2de60p1c441ejsndb9c34fab85c',
+// 		'X-RapidAPI-Host': 'bing-image-search1.p.rapidapi.com'
+// 	}
+// };
+
+// getData3(url)
+
+// async function getData3(url) {
+//     try {
+//         const response = await fetch(url, options);
+//         const result = await response.text();
+//         const obj = JSON.parse(result);
+//         console.log(result)
+//         // let photos = obj.photos;
+//         // photos.forEach(myFunction);
+//         // function myFunction(value) {
+
+//         //     let img = document.createElement('img');
+//         //     img.src = value.src.medium;
+//         //     document.getElementById('container').appendChild(img);
+//         //     img.classList.add('img-fluid', 'm-2', 'result-img');
+//         // }
+//     } catch (error) {
+//         console.error(error);
+//     }
+// }
