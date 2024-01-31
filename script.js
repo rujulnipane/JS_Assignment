@@ -6,6 +6,7 @@ const prev = document.getElementById("prev");
 const next = document.getElementById("next");
 const img_container = document.getElementById('container');
 const spinner = document.createElement('div');
+const empty = document.getElementById("end");
 
 async function getData(){
     
@@ -18,7 +19,6 @@ async function getData(){
     try{
         if(pg_count === 1){
             img_container.innerHTML = "";
-
         }
         spinner.innerHTML =  `<div class="spinner-border" role="status">
     <span class="visually-hidden">Loading...</span>
@@ -27,17 +27,18 @@ async function getData(){
         const response = await fetch(imgurl);
         const data = await response.json();
         spinner.innerHTML = "";
-        const photos = data.results;
+        let photos = data.results;
+        console.log(photos);
         if(photos.length == 0) {
             alert("no more images");
         }
         else{
-            // console.log(photos);
+            console.log(photos);
             let matches = photos.filter(photo => {
                 const regex = new RegExp(`${inputdata}`, 'gi');
                 return photo.slug.match(regex) || photo.alt_description.match(regex);
                });
-               console.log(matches)
+            //    console.log(matches)
             matches.sort(sortByFreshness);
             // console.log(photos);
             matches.forEach(imageMount);
@@ -47,7 +48,9 @@ async function getData(){
         }
     }
     catch(e){
-        alert("something error happend")
+        alert("something error happend");
+        spinner.innerHTML = "";
+
         console.log(e);
     }
     
@@ -78,24 +81,45 @@ next.addEventListener("click",(event)=>{
     getData();
 })
 
+const isBottomOfPage = () => {
+    const scrollTop = document.documentElement.scrollTop || document.body.scrollTop;
+    const windowHeight = window.innerHeight;
+    const documentHeight = document.documentElement.scrollHeight;
 
-function next_page(){
-    // pg_count++;
-    // console.log(pg_count);
-    document.getElementById('container').innerHTML="";
+    return scrollTop + windowHeight >= documentHeight; // Adjust 200 to your liking
+};
+
+// Event listener for scroll events
+window.addEventListener('scroll', () => {
+    if (isBottomOfPage()) {
+        pg_count++;
+        getData();
+    }
+});
+
+
+
+// function next_page(){
+//     // pg_count++;
+//     // console.log(pg_count);
+//     document.getElementById('container').innerHTML="";
     
-    // let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=${pg_count}`;
-    getData();
-}
+//     // let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=${pg_count}`;
+//     getData();
+// }
 
 function imageMount(value) {
     let img_element = document.createElement('div');
     let img = document.createElement('img');
+    let img_link = document.createElement('a');
+    let img_caption = document.createElement('a');
+    img_link.href = value.links.html;
+    img_link.setAttribute('target','_blank');
     img.src = value.urls.small;
     img.alt = value.alt_description;
-    let img_caption = document.createElement('a');
     img_caption.textContent = value.alt_description;
-    img_element.appendChild(img);
+    img_link.appendChild(img);
+    img_element.appendChild(img_link);
     img_element.appendChild(img_caption);
     img_caption.href = value.links.html;
     img_caption.setAttribute('target','_blank');
@@ -103,12 +127,19 @@ function imageMount(value) {
     img_element.classList.add('img-element');
     img.classList.add('img-fluid');
     img_element.classList.add('m-2');
+    img.setAttribute('loading','lazy');
+    img_link.classList.add('image')
 }
 
 
 
 
+// https://graph.facebook.com/v19.0/ig_hashtag_search?user_id=17841405309211844&q=bluebottle&access_token={access-token}
 
+// ccb7cf296e0f658d5e08fa8be7ac82e1
+// 308572041690150
+
+// IGQWRNVTBSbm5leHFOM1lWT3dXMkhsT3YxY0NLakVaeTR0ei1jenM3QVNzVEZAXOXUzQkZAieXl0bVRiMGNld09RbGRuem92YWRTVWRpTHRlN2RSNEtRS3BLSFRZAcEJzMVBFWEw3R0cwbGh3QW5RNWMyWld3alViZAlEZD
 
 const url1 = 'https://pinterest-video-and-image-downloader.p.rapidapi.com/pinterest-user?username=viratkohli';
 const options1 = {
