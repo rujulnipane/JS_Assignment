@@ -1,5 +1,105 @@
+let pg_count = 0;
+const access_key = "KL7bSNfzkmWueulyi4QXA8byTN-CaIHMLIIxoENZLw0";
+const inputText = document.getElementById('search-input');
+const search = document.getElementById("search-btn");
+const prev = document.getElementById("prev");
+const next = document.getElementById("next");
+const img_container = document.getElementById('container');
+const spinner = document.createElement('div');
 
-let pg_count = 1;
+async function getData(){
+    
+    console.log(pg_count)
+    const inputdata = inputText.value;
+    if(inputdata.length == 0){
+        return alert("Please Enter Text");
+    }
+    let imgurl = `https://api.unsplash.com/search/photos?page=${pg_count}&query=${inputdata}&client_id=${access_key}`;
+    try{
+        if(pg_count === 1){
+            img_container.innerHTML = "";
+            console.log("Here");
+        }
+        spinner.innerHTML =  `<div class="spinner-border" role="status">
+    <span class="visually-hidden">Loading...</span>
+  </div>`
+        img_container.appendChild(spinner);
+        const response = await fetch(imgurl);
+        const data = await response.json();
+        spinner.innerHTML = "";
+        const photos = data.results;
+        if(photos.length == 0) {
+            alert("no more images");
+        }
+        else{
+            console.log(photos);
+            photos.sort(function(a,b){
+                return a.likes>b.likes;
+            })
+            console.log(photos);
+            photos.forEach(imageMount);
+        if(pg_count > 0){
+            next.style.display = 'block';
+        }
+        }
+    }
+    catch(e){
+        alert("something error happend")
+        console.log(e);
+    }
+    
+}
+
+search.addEventListener("click",(event)=>{
+    pg_count = 1;
+    event.preventDefault();
+    getData();
+   
+})
+
+// prev.addEventListener("click",(event)=>{
+//     event.preventDefault();
+    
+// })
+
+next.addEventListener("click",(event)=>{
+    event.preventDefault();
+    pg_count++;
+    getData();
+})
+
+
+function next_page(){
+    // pg_count++;
+    // console.log(pg_count);
+    document.getElementById('container').innerHTML="";
+    
+    // let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=${pg_count}`;
+    getData();
+}
+
+function imageMount(value) {
+    let img_element = document.createElement('div');
+    let img = document.createElement('img');
+    img.src = value.urls.small;
+    img.alt = value.alt_description;
+    let img_caption = document.createElement('a');
+    img_caption.textContent = value.alt_description;
+    img_element.appendChild(img);
+    img_element.appendChild(img_caption);
+    img_caption.href = value.links.html;
+    img_caption.setAttribute('target','_blank');
+    img_container.appendChild(img_element);
+    img_element.classList.add('img-element');
+    img.classList.add('img-fluid');
+    img_element.classList.add('m-2');
+}
+
+
+
+
+
+
 const url1 = 'https://pinterest-video-and-image-downloader.p.rapidapi.com/pinterest-user?username=viratkohli';
 const options1 = {
     method: 'GET',
@@ -35,14 +135,9 @@ const options3 = {
 
 async function getData3(url) {
     try {
-
-        let spinner_container = document.getElementById('spinner');
-        spinner_container.innerHTML =  `<div class="spinner-border" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>`
         const response = await fetch(url, options3);
         const result = await response.text();
-        spinner_container.innerHTML = "";
+        
         const obj = JSON.parse(result);
         console.log(obj)
         // document.getElementById('')
@@ -53,14 +148,7 @@ async function getData3(url) {
             document.getElementById('container').appendChild(ch);
         }
         else{
-            photos.forEach(myFunction);
-        }
-        
-        function myFunction(value) {
-            let img = document.createElement('img');
-            img.src = value.src.tiny;
-            document.getElementById('container').appendChild(img);
-            img.classList.add('img-fluid', 'm-4', 'result-img');
+            photos.forEach(imageMount);
         }
     }
     catch (error) {
@@ -68,8 +156,9 @@ async function getData3(url) {
     }
 }
 
+
+
 function myFunction(){
-    
     document.getElementById('container').innerHTML="";
     let keyword = document.getElementById('keyword').value;
     if(keyword.length == 0){
@@ -80,32 +169,21 @@ function myFunction(){
     getData3(url3);
 }
 
-function next_page(){
-    pg_count++;
-    console.log(pg_count);
-    document.getElementById('container').innerHTML="";
-    let keyword = document.getElementById('keyword').value;
-    if(keyword.length == 0){
-        return alert("Please Enter Text");
-    }
-    console.log(keyword);
-    let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=${pg_count}`;
-    getData3(url3);
-}
 
-function prev_page(){
 
-    pg_count--;
-    console.log(pg_count);  
-    document.getElementById('container').innerHTML="";
-    let keyword = document.getElementById('keyword').value;
-    if(keyword.length == 0){
-        return alert("Please Enter Text");
-    }
-    console.log(keyword);
-    let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=${pg_count}`;
-    getData3(url3);
-}
+// function prev_page(){
+
+//     pg_count--;
+//     console.log(pg_count);  
+//     document.getElementById('container').innerHTML="";
+//     let keyword = document.getElementById('keyword').value;
+//     if(keyword.length == 0){
+//         return alert("Please Enter Text");
+//     }
+//     console.log(keyword);
+//     let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=${pg_count}`;
+//     getData3(url3);
+// }
 
 // async function getData2(){
 //     try {
@@ -152,7 +230,7 @@ function prev_page(){
 
 // getData1();
 // getData2();
-getData3(url3);
+// getData3(url3);
 
 //filckr 3701d6bf2e4d3c9789beaa053a5ab400
 // c52d813ebf4b5858
