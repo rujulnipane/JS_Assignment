@@ -10,7 +10,7 @@ const spinner = document.createElement('div');
 async function getData(){
     
     console.log(pg_count)
-    const inputdata = inputText.value;
+    const inputdata = inputText.value.toLowerCase();
     if(inputdata.length == 0){
         return alert("Please Enter Text");
     }
@@ -18,7 +18,7 @@ async function getData(){
     try{
         if(pg_count === 1){
             img_container.innerHTML = "";
-            console.log("Here");
+
         }
         spinner.innerHTML =  `<div class="spinner-border" role="status">
     <span class="visually-hidden">Loading...</span>
@@ -32,12 +32,15 @@ async function getData(){
             alert("no more images");
         }
         else{
-            console.log(photos);
-            photos.sort(function(a,b){
-                return a.likes>b.likes;
-            })
-            console.log(photos);
-            photos.forEach(imageMount);
+            // console.log(photos);
+            let matches = photos.filter(photo => {
+                const regex = new RegExp(`${inputdata}`, 'gi');
+                return photo.slug.match(regex) || photo.alt_description.match(regex);
+               });
+               console.log(matches)
+            matches.sort(sortByFreshness);
+            // console.log(photos);
+            matches.forEach(imageMount);
         if(pg_count > 0){
             next.style.display = 'block';
         }
@@ -50,6 +53,17 @@ async function getData(){
     
 }
 
+const parseISODate = (isoDateString) => {
+    return new Date(isoDateString);
+};
+
+const sortByFreshness = (a, b) => {
+    const dateA = parseISODate(a.created_at);
+    const dateB = parseISODate(b.created_at);
+    return dateB - dateA;
+};
+
+
 search.addEventListener("click",(event)=>{
     pg_count = 1;
     event.preventDefault();
@@ -57,10 +71,6 @@ search.addEventListener("click",(event)=>{
    
 })
 
-// prev.addEventListener("click",(event)=>{
-//     event.preventDefault();
-    
-// })
 
 next.addEventListener("click",(event)=>{
     event.preventDefault();
