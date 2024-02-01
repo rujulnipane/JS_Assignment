@@ -17,6 +17,11 @@
     width: 100px;
 }
 
+.icon{
+    height: 20px;
+    width: 20px;
+}
+
 body{
     /* background: linear-gradient(#e66465, #9198e5); */
 }
