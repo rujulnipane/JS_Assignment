@@ -69,8 +69,17 @@ body{
     flex-direction: column;
     width: 30%;
     /* object-fit: cover; */
-    height: 50vh;
-    box-shadow: 0 4px 4px black;
+    height: 60vh;
+    box-shadow: 0 4px 3px black;
+}
+.img-element:hover{
+    display: flex;
+    flex-direction: column;
+    width: 30%;
+    opacity: 0.8;
+    height: 60vh;
+    box-shadow: 0 4px 3px black;
+
 }
 
 .img-element a{
@@ -93,6 +102,7 @@ body{
  @media (max-width:758px) {
     .img-element{
         width: 40%;
+        height: 70vh;
     }
 
     
@@ -101,5 +111,6 @@ body{
  @media (max-width:450px) {
     .img-element{
         width: 100%;
+        height: 70vh;
     }
  }

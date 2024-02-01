@@ -6,31 +6,44 @@ const prev = document.getElementById("prev");
 const next = document.getElementById("next");
 const img_container = document.getElementById('container');
 const spinner = document.createElement('div');
+spinner.classList.add('text-center');
 const empty = document.getElementById("end");
+
+let inputdata;
 
 async function getData(){
     
     console.log(pg_count)
-    const inputdata = inputText.value.toLowerCase();
+    inputdata = inputText.value.toLowerCase();
     if(inputdata.length == 0){
         return alert("Please Enter Text");
     }
-    let imgurl = `https://api.unsplash.com/search/photos?page=${pg_count}&query=${inputdata}&client_id=${access_key}`;
+   
+    if (!/^[a-zA-Z]+$/.test(inputdata)) {
+        return alert("Please enter valid keyword");
+    }
+
+    let unsplashurl = `https://api.unsplash.com/search/photos?page=${pg_count}&query=${inputdata}&client_id=${access_key}`;
+    const flickrurl = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=3701d6bf2e4d3c9789beaa053a5ab400&tags=cats&format=json&nojsoncallback=1`
     try{
         if(pg_count === 1){
             img_container.innerHTML = "";
         }
-        spinner.innerHTML =  `<div class="spinner-border" role="status">
-    <span class="visually-hidden">Loading...</span>
-  </div>`
-        img_container.appendChild(spinner);
-        const response = await fetch(imgurl);
+
+    spinner.innerHTML = `<div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>`;
+    document.body.appendChild(spinner);
+        
+        const response = await fetch(unsplashurl);
         const data = await response.json();
         spinner.innerHTML = "";
         let photos = data.results;
+        let images = data.data;
+        // data.forEach(myFunction);
         console.log(photos);
         if(photos.length == 0) {
-            alert("no more images");
+            alert("no results found");
         }
         else{
             console.log(photos);
@@ -50,11 +63,12 @@ async function getData(){
     catch(e){
         alert("something error happend");
         spinner.innerHTML = "";
-
+        window.removeEventListener('scroll','getdata')
         console.log(e);
     }
     
 }
+
 
 const parseISODate = (isoDateString) => {
     return new Date(isoDateString);
@@ -98,15 +112,43 @@ window.addEventListener('scroll', () => {
 });
 
 
+async function getFlickrImages(){
+    const flickrurl = `https://www.flickr.com/services/rest/?method=flickr.photos.search&api_key=3701d6bf2e4d3c9789beaa053a5ab400&tags=cats&format=json&nojsoncallback=1`
+    const response = await fetch(flickrurl);
+    const data = await response.json();
 
-// function next_page(){
-//     // pg_count++;
-//     // console.log(pg_count);
-//     document.getElementById('container').innerHTML="";
-    
-//     // let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=${pg_count}`;
-//     getData();
-// }
+    console.log(data);
+    let photos = data.photos.photo;
+    console.log(photos);
+    photos.forEach(myFunction);
+}
+
+function myFunction(value){
+    // let url = `https://farm${value.farm}.staticflicker.com/${value.server}/${value.id}_${value.secret}.jpg`;
+    let url = `https://farm${value.farm}.staticflickr.com/${value.server}/${value.id}_${value.secret}.jpg`;
+    let img_element = document.createElement('div');
+    let img = document.createElement('img');
+    let img_link = document.createElement('a');
+    let img_caption = document.createElement('a');
+    // img_link.href = value.links.html;
+    img_link.setAttribute('target','_blank');
+    img.src = url;
+    // img.alt = value.alt_description;
+    // img_caption.textContent = value.alt_description;
+    img_link.appendChild(img);
+    img_element.appendChild(img_link);
+    img_element.appendChild(img_caption);
+    // img_caption.href = value.links.html;
+    img_caption.setAttribute('target','_blank');
+    img_container.appendChild(img_element);
+    img_element.classList.add('img-element');
+    img.classList.add('img-fluid');
+    img_element.classList.add('m-2');
+    img.setAttribute('loading','lazy');
+    img_link.classList.add('image');
+}
+// getFlickrImages();
+
 
 function imageMount(value) {
     let img_element = document.createElement('div');
@@ -128,216 +170,57 @@ function imageMount(value) {
     img.classList.add('img-fluid');
     img_element.classList.add('m-2');
     img.setAttribute('loading','lazy');
-    img_link.classList.add('image')
+    img_link.classList.add('image');
 }
 
 
+async function getPintrestImages(){
 
-
-// https://graph.facebook.com/v19.0/ig_hashtag_search?user_id=17841405309211844&q=bluebottle&access_token={access-token}
-
-// ccb7cf296e0f658d5e08fa8be7ac82e1
-// 308572041690150
-
-// IGQWRNVTBSbm5leHFOM1lWT3dXMkhsT3YxY0NLakVaeTR0ei1jenM3QVNzVEZAXOXUzQkZAieXl0bVRiMGNld09RbGRuem92YWRTVWRpTHRlN2RSNEtRS3BLSFRZAcEJzMVBFWEw3R0cwbGh3QW5RNWMyWld3alViZAlEZD
-
-const url1 = 'https://pinterest-video-and-image-downloader.p.rapidapi.com/pinterest-user?username=viratkohli';
-const options1 = {
-    method: 'GET',
-    headers: {
-        'X-RapidAPI-Key': '1541e54116msh122880b1fc2de60p1c441ejsndb9c34fab85c',
-        'X-RapidAPI-Host': 'pinterest-video-and-image-downloader.p.rapidapi.com'
-    }
-};
-
-const url2 = 'https://instagram130.p.rapidapi.com/account-medias?userid=13460080&first=40';
-const options2 = {
+    const url = 'https://pinterest-downloader-download-pinterest-image-video-and-reels.p.rapidapi.com/api/basesearch?query=messi';
+const options = {
 	method: 'GET',
 	headers: {
-		'X-RapidAPI-Key': '1541e54116msh122880b1fc2de60p1c441ejsndb9c34fab85c',
-		'X-RapidAPI-Host': 'instagram130.p.rapidapi.com'
+		'X-RapidAPI-Key': '89b55ce14bmsh7160029a8fa0bc8p128d3ajsn9fa7187ae5ec',
+		'X-RapidAPI-Host': 'pinterest-downloader-download-pinterest-image-video-and-reels.p.rapidapi.com'
 	}
 };
 
-
-const url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=dog&locale=en-US&per_page=30&page=1`;
-const options3 = {
-    method: 'GET',
-    headers: {
-        Authorization: 'StETECaNFCtc7ohSE7o6AxkEiyrM5tnKxdzrNoWGB00NQzOVaRGjb88o',
-        'X-RapidAPI-Key': '1541e54116msh122880b1fc2de60p1c441ejsndb9c34fab85c',
-        'X-RapidAPI-Host': 'PexelsdimasV1.p.rapidapi.com'
-    }
-};
-
-
-
-
-
-async function getData3(url) {
-    try {
-        const response = await fetch(url, options3);
-        const result = await response.text();
-        
-        const obj = JSON.parse(result);
-        console.log(obj)
-        // document.getElementById('')
-        let photos = obj.photos;
-        if(photos.length == 0) {
-            let ch  = document.createElement('h3');
-            ch.textContent = "No Images Found";
-            document.getElementById('container').appendChild(ch);
-        }
-        else{
-            photos.forEach(imageMount);
+try {
+            const response = await fetch(url, options);
+            const result = await response.json();
+            // console.log(result.resource_response);
+            const photos = result.resource_response.results;
+            // console.log(photos);
+            photos.forEach(pintrestImg);
+        } catch (error) {
+            console.error(error);
         }
     }
-    catch (error) {
-        console.error(error);
+
+    // getPintrestImages();
+
+    function pintrestImg(value){
+        console.log(value.images)
+        let img_element = document.createElement('div');
+        let img = document.createElement('img');
+        let img_link = document.createElement('a');
+        let img_caption = document.createElement('a');
+        // img_link.href = value.links.html;
+        img_link.setAttribute('target','_blank');
+        img.src = value.images["170x"].url;
+        // img.alt = value.alt_description;
+        // img_caption.textContent = value.alt_description;
+        img_link.appendChild(img);
+        img_element.appendChild(img_link);
+        img_element.appendChild(img_caption);
+        // img_caption.href = value.links.html;
+        img_caption.setAttribute('target','_blank');
+        img_container.appendChild(img_element);
+        img_element.classList.add('img-element');
+        img.classList.add('img-fluid');
+        img_element.classList.add('m-2');
+        img.setAttribute('loading','lazy');
+        img_link.classList.add('image');
     }
-}
 
 
-
-function myFunction(){
-    document.getElementById('container').innerHTML="";
-    let keyword = document.getElementById('keyword').value;
-    if(keyword.length == 0){
-        return alert("Please Enter Text");
-    }
-    console.log(keyword);
-    let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=1`;
-    getData3(url3);
-}
-
-
-
-// function prev_page(){
-
-//     pg_count--;
-//     console.log(pg_count);  
-//     document.getElementById('container').innerHTML="";
-//     let keyword = document.getElementById('keyword').value;
-//     if(keyword.length == 0){
-//         return alert("Please Enter Text");
-//     }
-//     console.log(keyword);
-//     let url3 = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${keyword}&locale=en-US&per_page=40&page=${pg_count}`;
-//     getData3(url3);
-// }
-
-// async function getData2(){
-//     try {
-//         const response = await fetch(url2, options2);
-//         const result = await response.text();
-//         const obj = JSON.parse(result);
-//         let photos = obj.edges;
-//         // console.log(photos);
-//         photos.forEach(myFunction);
-//         function myFunction(value){
-//             // console.log(value.node.thumbnail_src)
-//             let img = document.createElement('img');
-//             img.src = value.node.thumbnail_src;
-//             document.getElementById('container').appendChild(img);
-//         }
-//     } catch (error) {
-//         console.error(error);
-//     }
-// }
-
-
-
-
-// async function getData1() {
-//     try {
-//         const response = await fetch(url1, options1);
-//         const result = await response.text();
-//         const obj = JSON.parse(result);
-//         // console.log(result)
-//         let photos = obj.data;
-//         // console.log(photos)
-//         photos.forEach(myFunction);
-//         function myFunction(value) {
-
-//             let img = document.createElement('img');
-//             img.src = value.thumbnail;
-//             document.getElementById('container').appendChild(img);
-//             img.classList.add('img-fluid');
-//         }
-//     } catch (error) {
-//         console.error(error);
-//     }
-// }
-
-// getData1();
-// getData2();
-// getData3(url3);
-
-//filckr 3701d6bf2e4d3c9789beaa053a5ab400
-// c52d813ebf4b5858
-
-
-// const url = 'https://pinterest-downloader-download-pinterest-image-video-and-reels.p.rapidapi.com/api/basesearch?query=dog';
-// const options = {
-// 	method: 'GET',
-// 	headers: {
-// 		'X-RapidAPI-Key': '1541e54116msh122880b1fc2de60p1c441ejsndb9c34fab85c',
-// 		'X-RapidAPI-Host': 'pinterest-downloader-download-pinterest-image-video-and-reels.p.rapidapi.com'
-// 	}
-// };
-
-// async function getData3(url) {
-//     try {
-//         const response = await fetch(url, options);
-//         const result = await response.text();
-//         const obj = JSON.parse(result);
-//         console.log(obj)
-//         let photos = obj.resource_response.results;
-//         photos.forEach(myFunction);
-//         function myFunction(value) {
-//             console.log(value);
-//             let img = document.createElement('img');
-//             img.src = value.images["170x"].url;
-//             document.getElementById('container').appendChild(img);
-//             img.classList.add('img-fluid', 'm-2', 'result-img');
-//         }
-//     } catch (error) {
-//         console.error(error);
-//     }
-// }
-
-// getData3(url);
-
-
-
-
-// const url = 'https://bing-image-search1.p.rapidapi.com/images/search?q=tiger';
-// const options = {
-// 	method: 'GET',
-// 	headers: {
-// 		'X-RapidAPI-Key': '1541e54116msh122880b1fc2de60p1c441ejsndb9c34fab85c',
-// 		'X-RapidAPI-Host': 'bing-image-search1.p.rapidapi.com'
-// 	}
-// };
-
-// getData3(url)
-
-// async function getData3(url) {
-//     try {
-//         const response = await fetch(url, options);
-//         const result = await response.text();
-//         const obj = JSON.parse(result);
-//         console.log(result)
-//         // let photos = obj.photos;
-//         // photos.forEach(myFunction);
-//         // function myFunction(value) {
-
-//         //     let img = document.createElement('img');
-//         //     img.src = value.src.medium;
-//         //     document.getElementById('container').appendChild(img);
-//         //     img.classList.add('img-fluid', 'm-2', 'result-img');
-//         // }
-//     } catch (error) {
-//         console.error(error);
-//     }
-// }
