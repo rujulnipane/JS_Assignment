@@ -83,6 +83,7 @@ async function getFlickrImages() {
     let photos = data.photos.photo;
     console.log(photos);
     count+=photos.length;
+    photos = photos.slice(0,50);
     // let matches = photos.filter(photo => {
     //     const regex = new RegExp(`${inputdata}`, 'gi');
     //     return photo.title.match(regex);
@@ -144,6 +145,13 @@ async function getInstagramImages(){
         const result = await response.json();
         let photos = result.data.hashtag.edge_hashtag_to_media.edges;
         console.log(photos);
+        count+=photos.length;
+        // let matches = photos.filter(photo => {
+        //     console.log(photo.node.accessibility_caption);
+        //     const regex = new RegExp(`${inputdata}`, 'gi');
+        //     // return photo.node.accessibility_caption.match(regex);
+        // });
+        // console.log(matches);
         photos.forEach(addInstagramImages);
     } catch (error) {
         console.error(error);
@@ -179,7 +187,7 @@ function addUnsplashImages(value) {
 
 function addFlickrImages(value) {
     let url = `https://farm${value.farm}.staticflickr.com/${value.server}/${value.id}_${value.secret}.jpg`;
-    console.log(url)
+    // console.log(url)
     let img_element = document.createElement('div');
     let img = document.createElement('img');
     let img_link = document.createElement('a');
@@ -224,6 +232,7 @@ function addPintrestImages(value) {
     img_element.appendChild(img_link);
     img_element.appendChild(img_caption);
     // img_caption.href = value.links.html;
+    img_caption.textContent = "Flickr";
     img_caption.setAttribute('target', '_blank');
     img_container.appendChild(img_element);
     img_element.classList.add('img-element');
@@ -241,7 +250,7 @@ function addPexelImages(value) {
     let img_caption = document.createElement('a');
     let icon = document.createElement('img');
     icon.classList.add('icon');
-    icon.src = "./unsplash_icon.png";
+    icon.src = "./pexels_icon.png";
     // img_link.href = value.links.html;
     img_link.setAttribute('target', '_blank');
     img.src = value.src.original;
@@ -274,13 +283,13 @@ function addInstagramImages(value){
     icon.src = "./instagram.png";
     // img_link.href = value.links.html;
     img_link.setAttribute('target', '_blank');
-    img.src = value.node.thumbnail_src;
-    // img.alt = value.alt_description;
+    img.src = value.node.display_url;
+    img.alt = value.node.accessibility_caption;
     img_caption.textContent = "Instagram";
     img_link.appendChild(img);
     img_element.appendChild(img_link);
     img_element.appendChild(img_caption);
-    // img_caption.href = value.links.html;
+    img_caption.href = value.node.display_url;
     img_caption.setAttribute('target', '_blank');
     img_container.appendChild(img_element);
     img_element.classList.add('img-element');
