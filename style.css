@@ -4,6 +4,24 @@
     box-sizing: border-box;
 }
 
+/*
+*
+* ==========================================
+* FOR DEMO PURPOSE
+* ==========================================
+*
+*/
+
+body {
+    background: #f4f4f4;
+  }
+  
+  .banner {
+    background: #a770ef;
+    background: -webkit-linear-gradient(to right, #a770ef, #cf8bf3, #fdb99b);
+    background: linear-gradient(to right, #a770ef, #cf8bf3, #fdb99b);
+  }
+  
 
 #prev, #next{
     display: none;
@@ -12,10 +30,10 @@
     width: 150px;
 }
 
-#search-btn{
+/* #search-btn{
     margin-top: 20px;
     width: 100px;
-}
+} */
 
 .icon{
     height: 20px;
@@ -24,7 +42,7 @@
 }
 
 body{
-    /* background: linear-gradient(#e66465, #9198e5); */
+    background-color: rgb(14 77 92) !important;
 }
 
 .input-container{
@@ -43,10 +61,6 @@ body{
 #container{
     display: flex;
     flex-wrap: wrap;
-    height: fit-content;
-    /* min-height: 80vh; */
-    justify-content: center;
-    padding: 50px 0;
 }
 
 .pg_no{

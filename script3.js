@@ -34,24 +34,44 @@ async function getData() {
         document.body.appendChild(spinner);
 
         // Get Images from Different APIs
-
-        await getUnsplashImages();
-        await getPintrestImages();
-        await getPexelImages();
-        await getFlickrImages();
-        await getInstagramImages();
-        
-
+        try {
+            await getUnsplashImages();
+        }
+        catch (e) {
+            console.log(e);
+        }
+        try {
+            await getPintrestImages();
+        }
+        catch (e) {
+            console.log(e);
+        }
+        try {
+            await getFlickrImages();
+        }
+        catch (e) {
+            console.log(e);
+        }
+        try {
+            await getPexelImages();
+        }
+        catch (e) {
+            console.log(e);
+        }
+        try {
+            await getInstagramImages();
+        }
+        catch (e) {
+            console.log(e);
+        }
         spinner.innerHTML = "";
-
-        if(count == 0) {
+        if (count == 0) {
             alert("No results Found");
         }
     }
     catch (e) {
-        alert("something error happend");
         spinner.innerHTML = "";
-        // window.removeEventListener('scroll', 'getdata')
+        // window.removeEventListener('scroll', 'getdata');
         console.log(e);
     }
 
@@ -63,7 +83,7 @@ async function getUnsplashImages() {
     const response = await fetch(unsplashurl);
     const data = await response.json();
     let photos = data.results;
-    count+=photos.length;
+    count += photos.length;
     console.log(photos);
     let matches = photos.filter(photo => {
         const regex = new RegExp(`${inputdata}`, 'gi');
@@ -72,7 +92,8 @@ async function getUnsplashImages() {
     //    console.log(matches)
     matches.sort(sortByFreshness);
     // console.log(photos);
-    matches.forEach(addUnsplashImages);
+    // matches.forEach(createImage);
+    matches.forEach(photo => createAndAppendImage(photo, "Unsplash"));
 }
 
 async function getFlickrImages() {
@@ -82,15 +103,15 @@ async function getFlickrImages() {
     // console.log(data);
     let photos = data.photos.photo;
     console.log(photos);
-    count+=photos.length;
-    photos = photos.slice(0,50);
+    count += photos.length;
+    photos = photos.slice(0, 50);
     // let matches = photos.filter(photo => {
     //     const regex = new RegExp(`${inputdata}`, 'gi');
     //     return photo.title.match(regex);
     // });
     // console.log(matches);
     // matches.forEach(addFlickrImages);
-    photos.forEach(addFlickrImages);
+    photos.forEach(photo => createAndAppendImage(photo, "Flickr"));
 }
 
 async function getPintrestImages() {
@@ -106,9 +127,9 @@ async function getPintrestImages() {
     const data = await response.json();
     console.log(data);
     const photos = data.resource_response.results;
-    count+=photos.length;
+    count += photos.length;
     console.log(photos);
-    photos.forEach(addPintrestImages);
+    photos.forEach(photo => createAndAppendImage(photo, "Pinterest"));
 }
 
 async function getPexelImages() {
@@ -125,12 +146,12 @@ async function getPexelImages() {
     const data = await response.json();
     console.log(data);
     let photos = data.photos;
-    count+=photos.length;
-    photos.forEach(addPexelImages);
+    count += photos.length;
+    photos.forEach(photo => createAndAppendImage(photo, "Pexels"));
 }
 
 
-async function getInstagramImages(){
+async function getInstagramImages() {
     const instagramurl = `https://instagram-looter2.p.rapidapi.com/tag-feeds?query=${inputdata}`;
     const options = {
         method: 'GET',
@@ -139,166 +160,25 @@ async function getInstagramImages(){
             'X-RapidAPI-Host': 'instagram-looter2.p.rapidapi.com'
         }
     };
-    
+
     try {
         const response = await fetch(instagramurl, options);
         const result = await response.json();
         let photos = result.data.hashtag.edge_hashtag_to_media.edges;
         console.log(photos);
-        count+=photos.length;
+        count += photos.length;
         // let matches = photos.filter(photo => {
         //     console.log(photo.node.accessibility_caption);
         //     const regex = new RegExp(`${inputdata}`, 'gi');
         //     // return photo.node.accessibility_caption.match(regex);
         // });
         // console.log(matches);
-        photos.forEach(addInstagramImages);
+        photos.forEach(photo => createAndAppendImage(photo, "Instagram"));
     } catch (error) {
         console.error(error);
     }
 }
 
-function addUnsplashImages(value) {
-    let img_element = document.createElement('div');
-    let img = document.createElement('img');
-    let img_link = document.createElement('a');
-    let img_caption = document.createElement('a');
-    let icon = document.createElement('img');
-    icon.classList.add('icon');
-    icon.src = "./unsplash_icon.png";
-    img_link.href = value.links.html;
-    img_link.setAttribute('target', '_blank');
-    img.src = value.urls.small;
-    img.alt = value.alt_description;
-    img_caption.innerHTML = "unsplash "+value.alt_description;
-    img_link.appendChild(img);
-    img_element.appendChild(img_link);
-    img_element.appendChild(img_caption);
-    img_caption.href = value.links.html;
-    img_caption.setAttribute('target', '_blank');
-    img_container.appendChild(img_element);
-    img_element.classList.add('img-element');
-    img.classList.add('img-fluid');
-    img_element.classList.add('m-2');
-    img.setAttribute('loading', 'lazy');
-    img_link.classList.add('image');
-    img_caption.appendChild(icon);
-}
-
-function addFlickrImages(value) {
-    let url = `https://farm${value.farm}.staticflickr.com/${value.server}/${value.id}_${value.secret}.jpg`;
-    // console.log(url)
-    let img_element = document.createElement('div');
-    let img = document.createElement('img');
-    let img_link = document.createElement('a');
-    let img_caption = document.createElement('a');
-    let icon = document.createElement('img');
-    icon.classList.add('icon');
-    icon.src = "./flickr.png";
-    img_link.href = url;
-    img_link.setAttribute('target', '_blank');
-    img.src = url;
-    // img.alt = value.alt_description;
-    img_caption.textContent = "Flickr";
-    img_link.appendChild(img);
-    img_element.appendChild(img_link);
-    img_element.appendChild(img_caption);
-    // img_caption.href = value.links.html;
-    img_caption.setAttribute('target', '_blank');
-    img_container.appendChild(img_element);
-    img_element.classList.add('img-element');
-    img.classList.add('img-fluid');
-    img_element.classList.add('m-2');
-    img.setAttribute('loading', 'lazy');
-    img_link.classList.add('image');
-    img_caption.appendChild(icon);
-}
-
-function addPintrestImages(value) {
-    console.log(value.images)
-    let img_element = document.createElement('div');
-    let img = document.createElement('img');
-    let icon = document.createElement('img');
-    icon.classList.add('icon');
-    icon.src = "./Pinterest-logo.png";
-    let img_link = document.createElement('a');
-    let img_caption = document.createElement('a');
-    // img_link.href = value.links.html;
-    img_link.setAttribute('target', '_blank');
-    img.src = value.images["170x"].url;
-    // img.alt = value.alt_description;
-    img_caption.appendChild(icon);
-    img_link.appendChild(img);
-    img_element.appendChild(img_link);
-    img_element.appendChild(img_caption);
-    // img_caption.href = value.links.html;
-    img_caption.textContent = "Flickr";
-    img_caption.setAttribute('target', '_blank');
-    img_container.appendChild(img_element);
-    img_element.classList.add('img-element');
-    img.classList.add('img-fluid');
-    img_element.classList.add('m-2');
-    img.setAttribute('loading', 'lazy');
-    img_link.classList.add('image');
-}
-
-function addPexelImages(value) {
-    console.log(value.images)
-    let img_element = document.createElement('div');
-    let img = document.createElement('img');
-    let img_link = document.createElement('a');
-    let img_caption = document.createElement('a');
-    let icon = document.createElement('img');
-    icon.classList.add('icon');
-    icon.src = "./pexels_icon.png";
-    // img_link.href = value.links.html;
-    img_link.setAttribute('target', '_blank');
-    img.src = value.src.original;
-    // img.alt = value.alt_description;
-    img_caption.textContent = "pexel";
-    img_link.appendChild(img);
-    img_element.appendChild(img_link);
-    img_element.appendChild(img_caption);
-    // img_caption.href = value.links.html;
-    img_caption.setAttribute('target', '_blank');
-    img_container.appendChild(img_element);
-    img_element.classList.add('img-element');
-    img.classList.add('img-fluid');
-    img_element.classList.add('m-2');
-    // img.setAttribute('loading', 'lazy');
-    img_link.classList.add('image');
-    img_caption.appendChild(icon);
-}
-
-
-
-function addInstagramImages(value){
-    console.log(value.images)
-    let img_element = document.createElement('div');
-    let img = document.createElement('img');
-    let img_link = document.createElement('a');
-    let img_caption = document.createElement('a');
-    let icon = document.createElement('img');
-    icon.classList.add('icon');
-    icon.src = "./instagram.png";
-    // img_link.href = value.links.html;
-    img_link.setAttribute('target', '_blank');
-    img.src = value.node.display_url;
-    img.alt = value.node.accessibility_caption;
-    img_caption.textContent = "Instagram";
-    img_link.appendChild(img);
-    img_element.appendChild(img_link);
-    img_element.appendChild(img_caption);
-    img_caption.href = value.node.display_url;
-    img_caption.setAttribute('target', '_blank');
-    img_container.appendChild(img_element);
-    img_element.classList.add('img-element');
-    img.classList.add('img-fluid');
-    img_element.classList.add('m-2');
-    // img.setAttribute('loading', 'lazy');
-    img_link.classList.add('image');
-    img_caption.appendChild(icon);
-}
 
 const parseISODate = (isoDateString) => {
     return new Date(isoDateString);
@@ -327,10 +207,80 @@ const isBottomOfPage = () => {
 };
 
 // Event listener for scroll events
-// window.addEventListener('scroll', () => {
-//     if (isBottomOfPage()) {
-//         pg_count++;
-//         getData();
-//     }
-// });
+window.addEventListener('scroll', () => {
+    if (isBottomOfPage()) {
+        pg_count++;
+        getData();
+    }
+});
+
+
+async function createAndAppendImage(value, source) {
+    try {
+        const colDiv = document.createElement("div");
+        colDiv.className = "col-xl-3 col-lg-4 col-md-auto mb-4";
+
+        const cardDiv = document.createElement("div");
+        cardDiv.className = "bg-white rounded shadow-sm";
+
+        const img = document.createElement("img");
+        img.alt = "";
+        img.className = "img-fluid card-img-top mx-auto";
+
+        const contentDiv = document.createElement("div");
+        contentDiv.className = "p-4";
+
+        const title = document.createElement("h5");
+        const titleLink = document.createElement("a");
+        titleLink.className = "text-dark";
+        titleLink.textContent = source;
+        titleLink.setAttribute("target", "_blank");
+        title.appendChild(titleLink);
+
+        const description = document.createElement("p");
+        description.className = "small text-muted mb-0";
+
+        contentDiv.appendChild(title);
+        contentDiv.appendChild(description);
+
+        cardDiv.appendChild(img);
+        cardDiv.appendChild(contentDiv);
+
+        colDiv.appendChild(cardDiv);
+        img_container.appendChild(colDiv);
+
+        let imageUrl;
+        let des;
+        let link;
+
+        switch (source) {
+            case "Pinterest":
+                imageUrl = value.images["170x"].url;
+                link = value.images["170x"].url;
+                break;
+            case "Flickr":
+                imageUrl = `https://farm${value.farm}.staticflickr.com/${value.server}/${value.id}_${value.secret}.jpg`;
+                link = `https://farm${value.farm}.staticflickr.com/${value.server}/${value.id}_${value.secret}.jpg`;
+                des = value.title;
+                break;
+            case "Pexels":
+                imageUrl = value.src.original;
+                break;
+            case "Instagram":
+                imageUrl = value.node.display_url;
+                break;
+            default:
+                imageUrl = value.urls.small;
+                link = value.links.html;
+                des = value.alt_description;
+        }
+        img.src = imageUrl;
+        titleLink.href = link;
+        description.textContent = des;
+
+    } catch (error) {
+        console.error("Error:", error.message);
+    }
+}
+
 

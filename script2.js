@@ -18,18 +18,18 @@ class ImageSearch {
 
     initialize() {
         this.searchBtn.addEventListener("click", async () => {
-            this.pgCount = 1;
+            this.pgthis.count = 1;
             await this.getData();
         });
 
         this.nextBtn.addEventListener("click", async () => {
-            this.pgCount++;
+            this.pgthis.count++;
             await this.getData();
         });
 
         window.addEventListener('scroll', async () => {
             if (this.isBottomOfPage()) {
-                this.pgCount++;
+                this.pgthis.count++;
                 await this.getData();
             }
         });
@@ -47,7 +47,7 @@ class ImageSearch {
         }
 
         try {
-            if (this.pgCount === 1) {
+            if (this.pgthis.count === 1) {
                 this.imgContainer.innerHTML = "";
             }
 
@@ -62,7 +62,7 @@ class ImageSearch {
 
             this.hideSpinner();
 
-            if (this.count === 0) {
+            if (this.this.count === 0) {
                 alert("No results Found");
             }
         } catch (e) {
@@ -73,12 +73,12 @@ class ImageSearch {
     }
 
     async getUnsplashImages() {
-        const unsplashurl = `https://api.unsplash.com/search/photos?page=${this.pgCount}&query=${this.inputdata}&client_id=${this.accessKey}`;
+        const unsplashurl = `https://api.unsplash.com/search/photos?page=${this.pgthis.count}&query=${this.inputdata}&client_id=${this.accessKey}`;
     // this.inputdata = this.inputText.value.toLowerCase();
     const response = await fetch(unsplashurl);
     const data = await response.json();
     let photos = data.results;
-    count+=photos.length;
+    this.this.count+=photos.length;
     console.log(photos);
     let matches = photos.filter(photo => {
         const regex = new RegExp(`${this.inputdata}`, 'gi');
@@ -103,13 +103,13 @@ class ImageSearch {
     const data = await response.json();
     console.log(data);
     const photos = data.resource_response.results;
-    count+=photos.length;
+    this.count+=photos.length;
     console.log(photos);
     photos.forEach(this.addPintrestImages);
     }
 
     async getPexelImages() {
-        const pexelurl = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${this.inputdata}&locale=en-US&per_page=30&page=${this.pgCount}`;
+        const pexelurl = `https://pexelsdimasv1.p.rapidapi.com/v1/search?query=${this.inputdata}&locale=en-US&per_page=30&page=${this.pgthis.count}`;
     const pexeloptions = {
         method: 'GET',
         headers: {
@@ -122,7 +122,7 @@ class ImageSearch {
     const data = await response.json();
     console.log(data);
     let photos = data.photos;
-    count+=photos.length;
+    this.count+=photos.length;
     photos.forEach(this.addPexelImages);
     }
 
@@ -133,7 +133,7 @@ class ImageSearch {
     // console.log(data);
     let photos = data.photos.photo;
     console.log(photos);
-    count+=photos.length;
+    this.count+=photos.length;
     photos = photos.slice(0,50);
     // let matches = photos.filter(photo => {
     //     const regex = new RegExp(`${inputdata}`, 'gi');
@@ -159,7 +159,7 @@ class ImageSearch {
             const result = await response.json();
             let photos = result.data.hashtag.edge_hashtag_to_media.edges;
             console.log(photos);
-            count+=photos.length;
+            this.count+=photos.length;
             photos.forEach(this.addInstagramImages);
         } catch (error) {
             console.error(error);
